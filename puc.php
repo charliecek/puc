@@ -4,7 +4,7 @@
  * Description: Uses PUC to check for plugin and theme releases from GitHub
  * Author: charliecek
  * Author URI: http://charliecek.eu/
- * Version: 1.1.0
+ * Version: 1.1.1
  */
 
 require __DIR__.'/plugin-update-checker-4.4/plugin-update-checker.php';
@@ -54,7 +54,7 @@ foreach ($aPluginSlugs as $strPluginSlug => $mixProperties) {
     }
   }
   
-  $strPluginPath = dirname(__DIR__).$aProperties['wp-content-path'];
+  $strPluginPath = ABSPATH.'wp-content'.$aProperties['wp-content-path'];
   // die("<pre>".var_export(array($strPluginPath, realpath($strPluginPath)), true)."</pre>");
   $updateCheckers[$strPluginSlug] = Puc_v4_Factory::buildUpdateChecker(
     'https://github.com/charliecek/'.$aProperties['github-repo-name'].'/',
