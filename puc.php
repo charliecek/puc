@@ -4,12 +4,12 @@
  * Description: Uses PUC to check for plugin and theme releases from GitHub
  * Author: charliecek
  * Author URI: http://charliecek.eu/
- * Version: 1.1.1
+ * Version: 1.2.0
  */
 
 require __DIR__.'/plugin-update-checker-4.4/plugin-update-checker.php';
 
-$aPluginSlugs = array(
+$aPluginOrThemeSlugs = array(
   'all-in-one-event-calendar-fixes' => '%%slug%%',
   'flashmob-organizer-profile' => '%%slug%%',
   'flashmob-stats-parser' => '%%slug%%',
@@ -18,13 +18,26 @@ $aPluginSlugs = array(
   'puc' => '%%slug%%',
 );
 
+$objThemeImpreza = wp_get_theme('Impreza');
+if ($objThemeImpreza->exists()) {
+  $strVersion = $objThemeImpreza->get('Version');
+  $bIsAtLeastVersion50 = version_compare( $strVersion, '5.0', '>=' );
+  if ($bIsAtLeastVersion50) {
+    $aPluginOrThemeSlugs['Impreza-child'] = array(
+      'wp-content-path'   => '/themes/%%slug%%/functions.php',
+      'github-repo-name'  => 'impreza-child-srd',
+      'github-branch'     => 'master',
+    );
+  }
+}
+
 $aDefaultProperties = array(
   'wp-content-path'   => '/plugins/%%slug%%/%%slug%%.php',
   'github-repo-name'  => '%%slug%%',
   'github-branch'     => 'master',
 );
 $updateCheckers = array();
-foreach ($aPluginSlugs as $strPluginSlug => $mixProperties) {
+foreach ($aPluginOrThemeSlugs as $strPluginSlug => $mixProperties) {
   if (is_array($mixProperties)) {
     $aProperties = $mixProperties;
     // Check format of set properties //
