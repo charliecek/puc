@@ -4,31 +4,30 @@
  * Description: Uses PUC to check for plugin and theme releases from GitHub
  * Author: charliecek
  * Author URI: http://charliecek.eu/
- * Version: 1.2.0
+ * Version: 1.3.0
  */
 
 require __DIR__.'/plugin-update-checker-4.4/plugin-update-checker.php';
 
-$aPluginOrThemeSlugs = array(
-  'all-in-one-event-calendar-fixes' => '%%slug%%',
-  'flashmob-organizer-profile' => '%%slug%%',
-  'flashmob-stats-parser' => '%%slug%%',
-  'polylang_language_fallback' => '%%slug%%',
-  'srd-wp-mail-smtp-fixes' => '%%slug%%',
-  'puc' => '%%slug%%',
+$aSettingPaths = array(
+  'ext' => WP_CONTENT_DIR . '/extensions/puc-settings.php',
+  'loc' => __DIR__ . '/puc-settings.php',
 );
-
-$objThemeImpreza = wp_get_theme('Impreza');
-if ($objThemeImpreza->exists()) {
-  $strVersion = $objThemeImpreza->get('Version');
-  $bIsAtLeastVersion50 = version_compare( $strVersion, '5.0', '>=' );
-  if ($bIsAtLeastVersion50) {
-    $aPluginOrThemeSlugs['Impreza-child'] = array(
-      'wp-content-path'   => '/themes/%%slug%%/functions.php',
-      'github-repo-name'  => 'impreza-child-srd',
-      'github-branch'     => 'master',
-    );
+$strPucSettingPath = $aSettingPaths['loc'];
+foreach ($aSettingPaths as $strSettingPath) {
+  if (file_exists($strSettingPath)) {
+    $strPucSettingPath = $strSettingPath;
+    break;
   }
+}
+if (file_exists($strPucSettingPath)) {
+  require_once $strPucSettingPath;
+} else {
+  $aPluginOrThemeSlugs = array(
+    'puc' => '%%slug%%',
+  );
+  $strFileContents = '<?php $aPluginOrThemeSlugs = '.var_export($aPluginOrThemeSlugs, true) .';';
+  file_put_contents($strPucSettingPath, $strFileContents);
 }
 
 $aDefaultProperties = array(
@@ -58,7 +57,7 @@ foreach ($aPluginOrThemeSlugs as $strPluginSlug => $mixProperties) {
   } else {
     continue;
   }
-  
+
   // Replace placeholders //
   foreach ($aProperties as $strKey => $strVal) {
     $aProperties[$strKey] = str_replace( '%%slug%%', $strPluginSlug, $strVal );
@@ -66,7 +65,7 @@ foreach ($aPluginOrThemeSlugs as $strPluginSlug => $mixProperties) {
       continue 2;
     }
   }
-  
+
   $strPluginPath = ABSPATH.'wp-content'.$aProperties['wp-content-path'];
   // die("<pre>".var_export(array($strPluginPath, realpath($strPluginPath)), true)."</pre>");
   $updateCheckers[$strPluginSlug] = Puc_v4_Factory::buildUpdateChecker(
