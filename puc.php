@@ -4,7 +4,7 @@
  * Description: Uses PUC to check for plugin and theme releases from GitHub
  * Author: charliecek
  * Author URI: http://charliecek.eu/
- * Version: 1.3.0
+ * Version: 1.4.0
  */
 
 require __DIR__.'/plugin-update-checker-4.4/plugin-update-checker.php';
@@ -66,18 +66,17 @@ foreach ($aPluginOrThemeSlugs as $strPluginSlug => $mixProperties) {
     }
   }
 
-  $strPluginPath = ABSPATH.'wp-content'.$aProperties['wp-content-path'];
+  $strPluginPath = ABSPATH . 'wp-content' . $aProperties['wp-content-path'];
   // die("<pre>".var_export(array($strPluginPath, realpath($strPluginPath)), true)."</pre>");
-  $updateCheckers[$strPluginSlug] = Puc_v4_Factory::buildUpdateChecker(
-    'https://github.com/charliecek/'.$aProperties['github-repo-name'].'/',
+  $updateCheckers[ $strPluginSlug ] = Puc_v4_Factory::buildUpdateChecker(
+    'https://github.com/charliecek/' . $aProperties['github-repo-name'] . '/',
     $strPluginPath,
     $strPluginSlug
   );
-  $updateCheckers[$strPluginSlug]->setBranch($aProperties['github-branch']);
+
+  if ( isset( $aProperties['auth_token'] ) && ! empty( $aProperties['auth_token'] ) ) {
+    $updateCheckers[ $strPluginSlug ]->setAuthentication( $aProperties['auth_token'] );
+  }
+
+  $updateCheckers[ $strPluginSlug ]->setBranch( $aProperties['github-branch'] );
 }
-
-//Optional: If you're using a private repository, specify the access token like this:
-// $myUpdateChecker->setAuthentication('your-token-here');
-
-//Optional: Set the branch that contains the stable release.
-// $myUpdateChecker->setBranch('stable-branch-name');
