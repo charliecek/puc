@@ -4,10 +4,10 @@
  * Description: Uses PUC to check for plugin and theme releases from GitHub
  * Author: charliecek
  * Author URI: http://charliecek.eu/
- * Version: 1.4.0
+ * Version: 2.0.0
  */
 
-require __DIR__.'/plugin-update-checker-4.4/plugin-update-checker.php';
+require __DIR__ . '/plugin-update-checker-4.8.1/plugin-update-checker.php';
 
 $aSettingPaths = array(
   'ext' => WP_CONTENT_DIR . '/extensions/puc-settings.php',
